@@ -44,34 +44,30 @@ function ggrm {
   ggp
 }
 
-# Define git push alias
-function ggpush {
-  if [[ "$1" == "-F" ]]; then
-    shift
-    git push "$@"
-  else
-    if git rev-parse --abbrev-ref HEAD | grep -q "^main$"; then
-      echo "On main branch, use -F flag to bypass"
+function ggpush() {
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    force_push=false
+
+    while getopts "f" opt; do
+        case $opt in
+            f) force_push=true ;;
+            *) return 1 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    if [ "$current_branch" != "main" ]; then
+        git push "$@"
+    elif [ "$force_push" = true ]; then
+        git push -f "$@"
     else
-      git push "$@"
+        echo "You are on the main branch. Use -f flag to force push."
     fi
-  fi
 }
 
 # Define git add and commit alias
 function ggac {
-  if [[ "$1" == "-F" ]]; then
-    shift
     git add .
     git commit -m "$@"
-  else
-    if git rev-parse --abbrev-ref HEAD | grep -q "^main$"; then
-      echo "On main branch, use -F flag to bypass"
-    else
-      ggs
-      git add .
-      git commit -m "$1"
-    fi
-  fi
 }
 
