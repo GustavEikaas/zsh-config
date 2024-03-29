@@ -45,24 +45,7 @@ function ggrm {
 }
 
 function ggpush() {
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-    force_push=false
-
-    while getopts "f" opt; do
-        case $opt in
-            f) force_push=true ;;
-            *) return 1 ;;
-        esac
-    done
-    shift $((OPTIND - 1))
-
-    if [ "$current_branch" != "main" ]; then
-        git push "$@"
-    elif [ "$force_push" = true ]; then
-        git push -f "$@"
-    else
-        echo "You are on the main branch. Use -f flag to force push."
-    fi
+  git push "$@"
 }
 
 # Define git add and commit alias
